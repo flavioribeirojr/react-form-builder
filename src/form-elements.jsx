@@ -478,7 +478,7 @@ class Signature extends React.Component {
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group" ref={ref => { this.parentElement = ref }}>
+        <div className="form-group canvas-form-group" ref={ref => { this.parentElement = ref }}>
           <ComponentLabel {...this.props} />
           {this.props.read_only === true || !!sourceDataURL
             ? (<img src={sourceDataURL} />)
