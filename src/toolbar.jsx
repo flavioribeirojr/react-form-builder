@@ -174,6 +174,8 @@ export default class Toolbar extends React.Component {
         icon: 'fa fa-pencil-square-o',
         label: 'Signature',
         field_name: 'signature_',
+        full_width: true,
+        height: 150
       },
       {
         key: 'HyperLink',
@@ -239,6 +241,10 @@ export default class Toolbar extends React.Component {
     if (item.content) { elementOptions.content = item.content; }
 
     if (item.href) { elementOptions.href = item.href; }
+
+    if (item.full_width) { elementOptions.full_width = item.full_width; }
+
+    if (item.height) { elementOptions.height = item.height; }
 
     elementOptions.canHavePageBreakBefore = item.canHavePageBreakBefore !== false;
     elementOptions.canHaveAlternateForm = item.canHaveAlternateForm !== false;

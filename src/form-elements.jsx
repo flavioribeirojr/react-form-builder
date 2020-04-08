@@ -411,6 +411,9 @@ class Signature extends React.Component {
     super(props);
     this.state = {
       defaultValue: props.defaultValue,
+      componentBounds: {
+        width: 0
+      }
     };
     this.inputField = React.createRef();
     this.canvas = React.createRef();
@@ -424,8 +427,22 @@ class Signature extends React.Component {
     }
   }
 
+  calculateComponentBounds = () => {
+    const width = this.parentElement.clientWidth;
+
+    this.setState({
+      componentBounds: {
+        width
+      }
+    });
+  }
+
+  componentDidMount() {
+    this.calculateComponentBounds();
+  }
+
   render() {
-    const { defaultValue } = this.state;
+    const { defaultValue, componentBounds } = this.state;
     let canClear = !!defaultValue;
     const props = {};
     props.type = 'hidden';
@@ -443,6 +460,13 @@ class Signature extends React.Component {
       canClear = !this.props.read_only;
     }
 
+    if (this.props.data.full_width) {      
+      pad_props.canvasProps = {
+        width: componentBounds.width,
+        height: this.props.data.height || 150
+      };
+    }
+
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
@@ -454,7 +478,7 @@ class Signature extends React.Component {
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className="form-group" ref={ref => { this.parentElement = ref }}>
           <ComponentLabel {...this.props} />
           {this.props.read_only === true || !!sourceDataURL
             ? (<img src={sourceDataURL} />)
