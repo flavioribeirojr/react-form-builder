@@ -252,41 +252,6 @@ export default class FormElementsEdit extends React.Component {
           </div>
         }
 
-        {this.state.element.element === 'Signature' && this.props.element.readOnly
-          ? (
-            <div className="form-group">
-              <label className="control-label" htmlFor="variableKey">Variable Key:</label>
-              <input id="variableKey" type="text" className="form-control" defaultValue={this.props.element.variableKey} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'variableKey', 'value')} />
-              <p className="help-block">This will give the element a key that can be used to replace the content with a runtime value.</p>
-            </div>
-          )
-          : (<div/>)
-        }
-
-        {canHavePageBreakBefore &&
-          <div className="form-group">
-            <label className="control-label">Print Options</label>
-            <div className="checkbox">
-              <label>
-                <input type="checkbox" checked={this_checked_page_break} value={true} onChange={this.editElementProp.bind(this, 'pageBreakBefore', 'checked')} />
-                Page Break Before Element?
-              </label>
-            </div>
-          </div>
-        }
-
-        {canHaveAlternateForm &&
-          <div className="form-group">
-            <label className="control-label">Alternate/Signature Page</label>
-            <div className="checkbox">
-              <label>
-                <input type="checkbox" checked={this_checked_alternate_form} value={true} onChange={this.editElementProp.bind(this, 'alternateForm', 'checked')} />
-                Display on alternate/signature Page?
-              </label>
-            </div>
-          </div>
-        }
-
         { this.props.element.hasOwnProperty('step') &&
           <div className="form-group">
             <div className="form-group-range">
@@ -321,40 +286,10 @@ export default class FormElementsEdit extends React.Component {
             </div>
           </div>
         }
-        { this.props.element.hasOwnProperty('static') && this.props.element.static &&
-          <div className="form-group">
-            <label className="control-label">Text Style</label>
-            <div className="checkbox">
-              <label>
-                <input type="checkbox" checked={this_checked_bold} value={true} onChange={this.editElementProp.bind(this, 'bold', 'checked')} />
-                Bold
-              </label>
-            </div>
-            <div className="checkbox">
-              <label>
-                <input type="checkbox" checked={this_checked_italic} value={true} onChange={this.editElementProp.bind(this, 'italic', 'checked')} />
-                Italic
-              </label>
-            </div>
-          </div>
-        }
         { this.props.showCorrectColumn && this.props.element.canHaveAnswer && !this.props.element.hasOwnProperty('options') &&
           <div className="form-group">
             <label className="control-label" htmlFor="correctAnswer">Correct Answer</label>
             <input id="correctAnswer" type="text" className="form-control" defaultValue={this.props.element.correct} onBlur={this.updateElement.bind(this)} onChange={this.editElementProp.bind(this, 'correct', 'value')} />
-          </div>
-        }
-        { this.props.element.hasOwnProperty('options') &&
-          <div className="form-group">
-            <label className="control-label" htmlFor="optionsApiUrl">Populate Options from API</label>
-            <div className="row">
-              <div className="col-sm-6">
-                <input className="form-control" style={{ width: '100%' }} type="text" id="optionsApiUrl" placeholder="http://localhost:8080/api/optionsdata" />
-              </div>
-              <div className="col-sm-6">
-                <button onClick={this.addOptions.bind(this)} className="btn btn-success">Populate</button>
-              </div>
-            </div>
           </div>
         }
         { this.props.element.hasOwnProperty('options') &&

@@ -186,9 +186,15 @@ export default class ReactForm extends React.Component {
 
     let errors = [];
     if (!this.props.skip_validations) {
-      errors = this.validateForm();
+      const { errors: errorArray, errorsFields } = this.validateForm();
+      errors = errorArray;
+
       // Publish errors, if any.
-      this.emitter.emit('formValidation', errors);
+      this.emitter.emit('formValidation', errors, errorsFields);
+
+      setTimeout(() => {
+        this.scrollToFirstErroredElement();
+      }, 400);
     }
 
     // Only submit if there are no errors.
@@ -204,8 +210,26 @@ export default class ReactForm extends React.Component {
     }
   }
 
+  scrollToFirstErroredElement = () => {
+    const element = this.getFirstErrorElement();
+
+    if (!element) {
+      return;
+    }
+
+    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  getFirstErrorElement = () => {
+    const errorInputSelected = document.getElementsByClassName('has-error');
+    const element = errorInputSelected.item(0);
+
+    return element;
+  }
+
   validateForm() {
     const errors = [];
+    const errorsFields = {};
     let data_items = this.props.data;
 
     if (this.props.display_short) {
@@ -218,20 +242,23 @@ export default class ReactForm extends React.Component {
       }
 
       if (this._isInvalid(item)) {
+        errorsFields[item.field_name] = true;
         errors.push(`${item.label} is required!`);
       }
 
       if (this.props.validateForCorrectness && this._isIncorrect(item)) {
+        errorsFields[item.field_name] = true;
         errors.push(`${item.label} was answered incorrectly!`);
       }
     });
 
-    return errors;
+    return { errors, errorsFields };
   }
 
   getInputElement(item) {
     const Input = FormElements[item.element];
     return (<Input
+      emitter={this.emitter}
       handleChange={this.handleChange}
       ref={c => this.inputs[item.field_name] = c}
       mutable={true}
@@ -272,15 +299,15 @@ export default class ReactForm extends React.Component {
         case 'Range':
           return this.getInputElement(item);
         case 'Signature':
-          return <Signature ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
+          return <Signature emitter={this.emitter} ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
         case 'Checkboxes':
-          return <Checkboxes ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only} handleChange={this.handleChange} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._optionsDefaultValue(item)} />;
+          return <Checkboxes emitter={this.emitter} ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only} handleChange={this.handleChange} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._optionsDefaultValue(item)} />;
         case 'Image':
-          return <Image ref={c => this.inputs[item.field_name] = c} handleChange={this.handleChange} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
+          return <Image emitter={this.emitter} ref={c => this.inputs[item.field_name] = c} handleChange={this.handleChange} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
         case 'Download':
-          return <Download download_path={this.props.download_path} mutable={true} key={`form_${item.id}`} data={item} />;
+          return <Download emitter={this.emitter} download_path={this.props.download_path} mutable={true} key={`form_${item.id}`} data={item} />;
         case 'Camera':
-          return <Camera ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
+          return <Camera emitter={this.emitter} ref={c => this.inputs[item.field_name] = c} read_only={this.props.read_only || item.readOnly} mutable={true} key={`form_${item.id}`} data={item} defaultValue={this._getDefaultValue(item)} />;
         default:
           return this.getSimpleElement(item);
       }

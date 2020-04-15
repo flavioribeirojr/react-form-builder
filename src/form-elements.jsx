@@ -128,6 +128,25 @@ class TextInput extends React.Component {
   constructor(props) {
     super(props);
     this.inputField = React.createRef();
+    this.state = {
+      errors: {}
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   render() {
@@ -147,10 +166,13 @@ class TextInput extends React.Component {
       props.disabled = 'disabled';
     }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel {...this.props} />
           <input {...props} />
         </div>
@@ -163,6 +185,25 @@ class NumberInput extends React.Component {
   constructor(props) {
     super(props);
     this.inputField = React.createRef();
+    this.state = {
+      errors: {}
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   render() {
@@ -183,10 +224,13 @@ class NumberInput extends React.Component {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel {...this.props} />
           <input {...props} />
         </div>
@@ -199,6 +243,25 @@ class TextArea extends React.Component {
   constructor(props) {
     super(props);
     this.inputField = React.createRef();
+    this.state = {
+      errors: {}
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   render() {
@@ -218,10 +281,13 @@ class TextArea extends React.Component {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel {...this.props} />
           <textarea {...props} />
         </div>
@@ -236,7 +302,26 @@ class DatePicker extends React.Component {
     this.inputField = React.createRef();
 
     this.updateFormat(props);
-    this.state = this.updateDateTime(props, this.formatMask);
+    this.state = {
+      ...this.updateDateTime(props, this.formatMask),
+      errors: {}
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   formatMask = '';
@@ -320,10 +405,13 @@ class DatePicker extends React.Component {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel {...this.props} />
           <div>
             { readOnly &&
@@ -370,6 +458,25 @@ class Dropdown extends React.Component {
   constructor(props) {
     super(props);
     this.inputField = React.createRef();
+    this.state = {
+      errors: {}
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   render() {
@@ -389,10 +496,13 @@ class Dropdown extends React.Component {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel {...this.props} />
           <select {...props}>
             {this.props.data.options.map((option) => {
@@ -411,12 +521,12 @@ class Signature extends React.Component {
     super(props);
     this.state = {
       defaultValue: props.defaultValue,
-      componentBounds: {
-        width: 0
-      }
+      errors: {},
+      parentWidth: 0
     };
     this.inputField = React.createRef();
     this.canvas = React.createRef();
+    this.parentElement = React.createRef();
   }
 
   clear = () => {
@@ -427,22 +537,44 @@ class Signature extends React.Component {
     }
   }
 
-  calculateComponentBounds = () => {
-    const width = this.parentElement.clientWidth;
+  getParentWidth = () => {
+    if (!this.parentElement.current || !this.parentElement.current.getBoundingClientRect) {
+      return 0;
+    }
+
+    return this.parentElement.current.getBoundingClientRect().width;
+  }
+
+  setParentWidth = () => {
+    if (!this.parentElement.current) {
+      return;
+    }
 
     this.setState({
-      componentBounds: {
-        width
-      }
+      parentWidth: this.parentElement.current.clientWidth
     });
   }
 
   componentDidMount() {
-    this.calculateComponentBounds();
+    this.setParentWidth();
+
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   render() {
-    const { defaultValue, componentBounds } = this.state;
+    const { defaultValue } = this.state;
     let canClear = !!defaultValue;
     const props = {};
     props.type = 'hidden';
@@ -462,7 +594,7 @@ class Signature extends React.Component {
 
     if (this.props.data.full_width) {      
       pad_props.canvasProps = {
-        width: componentBounds.width,
+        width: this.state.parentWidth,
         height: this.props.data.height || 150
       };
     }
@@ -475,10 +607,13 @@ class Signature extends React.Component {
       sourceDataURL = `data:image/png;base64,${defaultValue}`;
     }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group canvas-form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group canvas-form-group" ref={ref => { this.parentElement = ref }}>
+        <div className={formGroupClass} ref={this.parentElement}>
           <ComponentLabel {...this.props} />
           {this.props.read_only === true || !!sourceDataURL
             ? (<img src={sourceDataURL} />)
@@ -498,7 +633,26 @@ class Tags extends React.Component {
     super(props);
     this.inputField = React.createRef();
     const { defaultValue, data } = props;
-    this.state = { value: this.getDefaultValue(defaultValue, data.options) };
+    this.state = {
+      value: this.getDefaultValue(defaultValue, data.options),
+      errors: {}
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   getDefaultValue(defaultValue, options) {
@@ -539,10 +693,13 @@ class Tags extends React.Component {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel {...this.props} />
           <Select {...props} />
         </div>
@@ -555,6 +712,25 @@ class Checkboxes extends React.Component {
   constructor(props) {
     super(props);
     this.options = {};
+    this.state = {
+      errors: {}
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   render() {
@@ -565,10 +741,13 @@ class Checkboxes extends React.Component {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel className="form-label" {...this.props} />
           {this.props.data.options.map((option) => {
             const this_key = `preview_${option.key}`;
@@ -603,9 +782,30 @@ class RadioButtons extends React.Component {
   constructor(props) {
     super(props);
     this.options = {};
+    this.state = {
+      errors: {}
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   render() {
+    const props = {};
+
     const self = this;
     let classNames = 'radio-label';
     if (this.props.data.inline) { classNames += ' option-inline'; }
@@ -613,10 +813,13 @@ class RadioButtons extends React.Component {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel className="form-label" {...this.props} />
           {this.props.data.options.map((option) => {
             const this_key = `preview_${option.key}`;
@@ -822,7 +1025,24 @@ class Range extends React.Component {
     this.inputField = React.createRef();
     this.state = {
       value: props.defaultValue !== undefined ? parseInt(props.defaultValue, 10) : parseInt(props.data.default_value, 10),
+      errors: {}
     };
+  }
+
+  componentDidMount() {
+    if (!this.props.emitter) {
+      return;
+    }
+
+    this.subscription = this.props.emitter.addListener('formValidation', (_, errors) => {
+      this.setState({ errors });
+    });
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.remove();
+    }
   }
 
   changeValue = (e) => {
@@ -871,10 +1091,13 @@ class Range extends React.Component {
     let baseClasses = 'SortableItem rfb-item';
     if (this.props.data.pageBreakBefore) { baseClasses += ' alwaysbreak'; }
 
+    const hasError = this.state.errors[props.name] !== undefined;
+    const formGroupClass = `form-group ${hasError ? 'has-error' : ''}`;
+
     return (
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
-        <div className="form-group">
+        <div className={formGroupClass}>
           <ComponentLabel {...this.props} />
           <div className="range">
             <div className="clearfix">
