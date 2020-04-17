@@ -153,6 +153,7 @@ class TextInput extends React.Component {
     const props = {};
     props.type = 'text';
     props.className = 'form-control';
+    props.style = {};
     props.name = this.props.data.field_name;
     if (this.props.mutable) {
       props.defaultValue = this.props.defaultValue;
@@ -164,6 +165,14 @@ class TextInput extends React.Component {
 
     if (this.props.read_only) {
       props.disabled = 'disabled';
+    }
+
+    if (this.props.data.height) {
+      props.style.height = this.props.data.height;
+    }
+
+    if (this.props.data.width) {
+      props.style.width = this.props.data.width;
     }
 
     const hasError = this.state.errors[props.name] !== undefined;
@@ -558,6 +567,8 @@ class Signature extends React.Component {
   componentDidMount() {
     this.setParentWidth();
 
+    window.addEventListener('resize', this.setParentWidth);
+
     if (!this.props.emitter) {
       return;
     }
@@ -568,6 +579,8 @@ class Signature extends React.Component {
   }
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.setParentWidth);
+
     if (this.subscription) {
       this.subscription.remove();
     }
