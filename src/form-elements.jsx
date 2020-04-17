@@ -919,7 +919,11 @@ class HyperLink extends React.Component {
       <div className={baseClasses}>
         <ComponentHeader {...this.props} />
         <div className="form-group">
-          <a target="_blank" href={this.props.data.href}>{this.props.data.content}</a>
+          <a
+            target="_blank"
+            href={this.props.data.href}
+            dangerouslySetInnerHTML={{ __html: this.props.data.content }}
+          />
         </div>
       </div>
     );
