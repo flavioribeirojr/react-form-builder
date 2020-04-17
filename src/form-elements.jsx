@@ -736,6 +736,8 @@ class Checkboxes extends React.Component {
   render() {
     const self = this;
     let classNames = 'checkbox-label';
+    const { props } = this;
+
     if (this.props.data.inline) { classNames += ' option-inline'; }
 
     let baseClasses = 'SortableItem rfb-item';

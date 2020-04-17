@@ -5,6 +5,7 @@ import {
 } from 'draft-js';
 import draftToHtml from 'draftjs-to-html';
 import { Editor } from 'react-draft-wysiwyg';
+import htmlToDraft from 'html-to-draftjs';
 
 import DynamicOptionList from './dynamic-option-list';
 import { get } from './stores/requests';
@@ -48,8 +49,7 @@ export default class FormElementsEdit extends React.Component {
   }
 
   onEditorStateChange(index, property, editorContent) {
-    // const html = draftToHtml(convertToRaw(editorContent.getCurrentContent())).replace(/<p>/g, '<div>').replace(/<\/p>/g, '</div>');
-    const html = draftToHtml(convertToRaw(editorContent.getCurrentContent())).replace(/<p>/g, '').replace(/<\/p>/g, '').replace(/(?:\r\n|\r|\n)/g, ' ');
+    const html = draftToHtml(convertToRaw(editorContent.getCurrentContent()))
     const this_element = this.state.element;
     this_element[property] = html;
 
@@ -69,12 +69,13 @@ export default class FormElementsEdit extends React.Component {
   }
 
   convertFromHTML(content) {
-    const newContent = convertFromHTML(content);
-    if (!newContent.contentBlocks || !newContent.contentBlocks.length) {
+    // const newContent = convertFromHTML(content);
+    const contentBlock = htmlToDraft(content);
+    if (!contentBlock.contentBlocks || !contentBlock.contentBlocks.length) {
       // to prevent crash when no contents in editor
       return EditorState.createEmpty();
     }
-    const contentState = ContentState.createFromBlockArray(newContent);
+    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks);
     return EditorState.createWithContent(contentState);
   }
 
