@@ -246,6 +246,8 @@ export default class Toolbar extends React.Component {
 
     if (item.height) { elementOptions.height = item.height; }
 
+    if (item.width) { elementOptions.width = item.width; }
+
     elementOptions.canHavePageBreakBefore = item.canHavePageBreakBefore !== false;
     elementOptions.canHaveAlternateForm = item.canHaveAlternateForm !== false;
     elementOptions.canHaveDisplayHorizontal = item.canHaveDisplayHorizontal !== false;
